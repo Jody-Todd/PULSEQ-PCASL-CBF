@@ -36,7 +36,7 @@ fi
 cd $script_dir
 
 echo "++Remove motion contribution to ASL timeseries, smooth ASL data, Compute CBF+++++++++++++++++++"
-matlab -nodisplay -r "environment_config(); hash_match('$asl_dir/test3.nii','$asl_dir/pcasl_epi_7T_TR6.seq'); asl_tools('$asl_dir/test3.nii', $s); para = get_parameter('$asl_dir/srtest3.nii', '$asl_dir/pcasl_epi_7T_TR6.seq'); compute_cbf(para, '$asl_dir/srtest3.nii'); exit;"
+matlab -nodisplay -r "addpath('/home/$user/ebip_share/jtodd/matlab/spm8/'); addpath('/home/$user/ebip_share/jtodd/matlab/asl_toolbox/'); addpath('/home/$user/ebip_share/jtodd/matlab/pulseq/matlab'); addpath('/home/$user/ebip_share/jtodd/matlab/nifti_tools/'); asl_tools('$asl_dir/test3.nii', $s); para = get_parameter('$asl_dir/srtest3.nii', '$asl_dir/pcasl_epi_7T_TR6.seq'); compute_cbf(para, '$asl_dir/srtest3.nii'); exit;"
 
 # get QC images for CBF
 

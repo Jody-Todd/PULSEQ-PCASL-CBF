@@ -1,0 +1,5 @@
+* change T1 and T2 values to 7T values
+* confirm order of control-label acquisitions
+* modify plotting code to suppress warnings
+* run plot scrips in a single matlab instance
+* create README.md

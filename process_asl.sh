@@ -1,17 +1,8 @@
 #!/bin/bash
 
-# This script computes CBF from a single echo ASL acquisition. 
+# This script computes CBF from a single echo Pulseq-PCASL acquisition. 
 #
-# Steps
-#	1. T1 preprocessing (skull strip, intensity normalization, segmentation)
-#	2. motion correction of ASL timeseries using asl_tools.m
-#	3. filter motion estimates from ASL timeseries using asl_tools
-#	4. cbf computation using equation in Alsop et al., 2021
-#	5. perform anatomical functional coregistration
-#	6. align masks from T1 to functional image space
-#	7. mask outputs
-#	8. calculate baseline measurements
-#	9. plot motion parameters
+# Steps:
 #
 # Parameters:
 #	$1: path to ASL recon directory 
@@ -24,9 +15,16 @@ set -e
 export user=`whoami`
 export OMP_NUM_THREADS=2
 export MKL_NUM_THREADS=2
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/$user/ebip_share/jtodd/pulse_seq_dev/PULSEQ-PCASL-CBF/libs
 
-asl_dir=$1
+asl_dir=${1%/}
+seq_file=("$asl_dir"/*pcasl*.seq)
+
+if [[ ${#seq_file[@]} -gt 1 ]]; then
+    echo "Error: Multiple *pcasl*.seq files found in $asl_dir. Expected exactly one."
+    # Exit the script with an error code
+    exit 1
+fi
+
 
 script_dir=$(dirname "$0")
 if [[ $script_dir != /* ]]; then
@@ -36,13 +34,12 @@ fi
 cd $script_dir
 
 echo "++Remove motion contribution to ASL timeseries, smooth ASL data, Compute CBF+++++++++++++++++++"
-matlab -nodisplay -r "environment_config(); hash_match('$asl_dir/test3.nii','$asl_dir/pcasl_epi_7T_TR6.seq'); asl_tools('$asl_dir/test3.nii', $s); para = get_parameter('$asl_dir/srtest3.nii', '$asl_dir/pcasl_epi_7T_TR6.seq'); compute_cbf(para, '$asl_dir/srtest3.nii'); exit;"
+matlab -nodisplay -r "environment_config(); hash_match('$asl_dir/test3.nii','$seq_file'); asl_tools('$asl_dir/test3.nii', $s); para = get_parameter('$seq_file'); compute_cbf(para, '$asl_dir/srtest3.nii'); exit;"
 
 # get QC images for CBF
+matlab -nodisplay -nosplash -r "plotQCResults('$asl_dir/mean_cbf.nii'); exit;"
 
-/usr/local/MATLAB/R2023a/bin/matlab -nodisplay -nosplash -r "plotQCResults('$asl_dir/mean_cbf_masked.nii'); exit;"
-
-rp_file=$(ls $output_dir/temp/rp_*.txt)
-echo $rp_file
-/usr/local/MATLAB/R2023a/bin/matlab -nodisplay -nosplash -r "plot_motion('$rp_file'); exit;"
+rp_file=$(ls $asl_dir/rp_*.txt)
+echo "motion file $rp_file found"
+matlab -nodisplay -nosplash -r "plot_motion('$rp_file'); exit;"
 

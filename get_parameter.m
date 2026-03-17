@@ -11,9 +11,6 @@ function [para] = get_parameter(pcasl_seq_file)
 	% read seq file
 	seq = mr.Sequence;
 	seq.read(pcasl_seq_file)
-	fprintf(['loading `' pcasl_seq_file '´ ...\n']);
-	seqName=seq.getDefinition('Name');
-	if ~isempty(seqName), fprintf('sequence name: %s\n',seqName); end
 
 	% extract necessary parameters from seq file. may want to add more later
 	para.TR = seq.getDefinition('TR'); % [s]

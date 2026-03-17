@@ -8,7 +8,7 @@ function  hash_match(pcasl_nifti_dat, pcasl_seq_file)
 
 	% read in nifti header
         asl_data = load_nii(pcasl_nifti_dat);
-        nifti_hash = asl_data.hdr.hist.descrip
+        nifti_hash = asl_data.hdr.hist.descrip;
 
         % read seq file
         seq = mr.Sequence;
@@ -17,12 +17,11 @@ function  hash_match(pcasl_nifti_dat, pcasl_seq_file)
         seqName=seq.getDefinition('Name');
         if ~isempty(seqName), fprintf('sequence name: %s\n',seqName); end
 
-        seq.signatureValue
         % confirm that seq file signature matches signature in nifti header
         if seq.signatureValue ~= nifti_hash
                 error('seq hash does not match data hash. \n seq hash: %s \n nifti hash: %s', seq_hash, nifti_hash);
 	else
-		fprintf('hash of nifti data matches hash of seq file -- good');
+		fprintf('hash of nifti data matches hash of seq file -- good \n');
 	end
 end
 

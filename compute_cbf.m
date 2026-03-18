@@ -13,8 +13,8 @@ function compute_cbf(para, asl_timeseries) %TR, MB_factor, tau, PLD, PreLD )
     delta_M(:,:,indices)=(M(:,:,indices)/2+M(:,:,indices+2)/2-M(:,:,indices+1));
     delta_M(isnan(delta_M))=0;
 
-    T1=1.5; %unit: s, t1 for tissue
-    T1b=1.664; %unit: s, t1 for blood
+    T1=1.5; %unit: s, t1 for tissue at 7T
+    T1b=2.1; %unit: s, t1 for blood at 7T
 
     % compute and preprocess M0
     M0=repmat(mean(M(:,:,2:2:end)/(1-exp(-para.TR/T1)),3),[1,1,size(delta_M,3)]);
